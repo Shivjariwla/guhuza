@@ -1,0 +1,46 @@
+generator client {
+  provider    = "prisma-client-js"
+  engineType  = "library"
+}
+
+datasource db {
+  provider = "mysql"
+  // switch to 127.0.0.1 to avoid IPv6 issues
+  url      = env("DATABASE_URL") 
+}
+
+model Level {
+  Level_Id      Int      @id @default(autoincrement())
+  Level_Title   String
+  Level_number  Int
+  players       Player[] 
+}
+
+model Milestone {
+  Milestone_Id             Int       @id @default(autoincrement())
+  Milestone_Title          String
+  Milestone_description    String
+  UnlockingLevel           Int
+  Milestone_reward_message String
+  Milestone_Link           String
+  Milestone_Button_CTA     String
+  players                  Player[]
+}
+
+model Player {
+  Player_ID    Int        @id @default(autoincrement())
+  Player_name  String
+  email        String?
+  Playerpoint  Int        @default(0)
+  streak       Int        @default(1)
+  lastLogin    DateTime   @default(now())
+  Level_Id     Int        @default(1)
+  Milestone_Id Int        @default(1)
+
+  // relations
+  level        Level      @relation(fields: [Level_Id], references: [Level_Id])
+  milestone    Milestone  @relation(fields: [Milestone_Id], references: [Milestone_Id])
+
+  @@index([Level_Id])
+  @@index([Milestone_Id])
+}
